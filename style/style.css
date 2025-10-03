@@ -1,0 +1,34 @@
+table {
+    border-collapse: collapse;
+    margin: 20px auto;
+}
+
+td {
+    width: 60px;
+    height: 60px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.cell {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: lightgray;
+    margin: auto;
+}
+
+.red {
+    background-color: red;
+}
+
+.yellow {
+    background-color: yellow;
+}
+
+.arrow {
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+    cursor: pointer;
+}
