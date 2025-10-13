@@ -53,7 +53,6 @@ func renderBoard() string {
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	if winner != "" || isBoardFull() {
-		// réinitialiser seulement après victoire ou match nul
 		board = [6][7]string{}
 		turn = "R"
 		winner = ""
@@ -167,10 +166,15 @@ func playHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// Servir le CSS
 	http.Handle("/style/", http.StripPrefix("/style/", http.FileServer(http.Dir("style"))))
+	// Servir la vidéo
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/game", gameHandler)
 	http.HandleFunc("/play", playHandler)
+
 	fmt.Println("Serveur lancé sur http://localhost:4000")
 	err := http.ListenAndServe(":4000", nil)
 	if err != nil {
