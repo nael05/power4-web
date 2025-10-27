@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Puissance 4</title>
+<style>
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  height: 100%;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  overflow: hidden;
+  background-color: #111;
+  position: relative;
+}
+
+/* Vidéo plein écran */
+video {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  z-index: -2;
+}
+
+/* Overlay sombre pour contraste */
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: -1;
+}
+
+/* Conteneur central */
+.container {
+  position: relative;
+  z-index: 1;
+  color: #fff;
+}
+
+/* Titre */
+h1 {
+  font-size: 4rem;
+  margin-bottom: 50px;
+  text-shadow: 2px 2px 12px rgba(0,0,0,0.7);
+}
+
+/* Bouton Jouer */
+.play-button {
+  padding: 18px 50px;
+  font-size: 2rem;
+  border: none;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #95a381, #a7ffa2);
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.play-button:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #a7ffa2, #95a381);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 3rem;
+  }
+  .play-button {
+    padding: 15px 35px;
+    font-size: 1.5rem;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Vidéo de fond -->
+<video autoplay muted loop>
+  <source src="/static/background.gif" type="video/gif">
+</video>
+
+<!-- Overlay -->
+<div id="overlay"></div>
+
+<!-- Contenu central -->
+<div class="container">
+  <h1>Bienvenue sur Puissance 4 !</h1>
+  <button class="play-button" onclick="window.location.href='/game'">Jouer</button>
+</div>
+
+</body>
+</html>

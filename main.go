@@ -3,14 +3,18 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
+	"os"
+	"strconv"
 )
 
 var board [6][7]string
 var turn = "R"
 var winner string
 
-func renderBoard() string {
+// renderBoard génère le HTML du plateau
+func renderBoard() template.HTML {
 	html := "<table>"
 	html += "<tr>"
 	for j := 0; j < 7; j++ {
@@ -48,38 +52,47 @@ func renderBoard() string {
 	} else {
 		html += fmt.Sprintf("<p>Tour de : %s</p>", turn)
 	}
-	return html
+	return template.HTML(html)
 }
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
+func resetBoard() { // Réinitialise le plateau
+	board = [6][7]string{}
+	turn = "R"
+	winner = ""
+}
+
+func homeHandler(w http.ResponseWriter, r *http.Request) { // Handler de l'accueil
+	log.Printf("%s requested %s", r.RemoteAddr, r.URL.Path)
 	if winner != "" || isBoardFull() {
-		board = [6][7]string{}
-		turn = "R"
-		winner = ""
+		resetBoard()
 	}
 	tmpl, err := template.ParseFiles("templates/home.html")
 	if err != nil {
 		http.Error(w, "Erreur chargement home.html", 500)
-		fmt.Println("Erreur:", err)
+		log.Println("Erreur template home:", err)
 		return
 	}
 	tmpl.Execute(w, nil)
 }
 
+// Handler du plateau
 func gameHandler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("%s requested %s", r.RemoteAddr, r.URL.Path)
 	tmpl, err := template.ParseFiles("templates/game.html")
 	if err != nil {
 		http.Error(w, "Erreur chargement game.html", 500)
-		fmt.Println("Erreur:", err)
+		log.Println("Erreur template game:", err)
 		return
 	}
 	data := struct {
 		BoardHTML template.HTML
-	}{BoardHTML: template.HTML(renderBoard())}
+	}{BoardHTML: renderBoard()}
 	tmpl.Execute(w, data)
 }
 
+// Vérifie victoire du joueur
 func checkWin(player string) bool {
+	// Horizontal
 	for i := 0; i < 6; i++ {
 		for j := 0; j < 4; j++ {
 			if board[i][j] == player && board[i][j+1] == player && board[i][j+2] == player && board[i][j+3] == player {
@@ -87,6 +100,7 @@ func checkWin(player string) bool {
 			}
 		}
 	}
+	// Vertical
 	for j := 0; j < 7; j++ {
 		for i := 0; i < 3; i++ {
 			if board[i][j] == player && board[i+1][j] == player && board[i+2][j] == player && board[i+3][j] == player {
@@ -94,6 +108,7 @@ func checkWin(player string) bool {
 			}
 		}
 	}
+	// Diagonale \
 	for i := 0; i < 3; i++ {
 		for j := 0; j < 4; j++ {
 			if board[i][j] == player && board[i+1][j+1] == player && board[i+2][j+2] == player && board[i+3][j+3] == player {
@@ -101,6 +116,7 @@ func checkWin(player string) bool {
 			}
 		}
 	}
+	// Diagonale /
 	for i := 3; i < 6; i++ {
 		for j := 0; j < 4; j++ {
 			if board[i][j] == player && board[i-1][j+1] == player && board[i-2][j+2] == player && board[i-3][j+3] == player {
@@ -111,6 +127,7 @@ func checkWin(player string) bool {
 	return false
 }
 
+// Vérifie si le plateau est plein
 func isBoardFull() bool {
 	for i := 0; i < 6; i++ {
 		for j := 0; j < 7; j++ {
@@ -122,16 +139,22 @@ func isBoardFull() bool {
 	return true
 }
 
+// Handler pour jouer un coup
 func playHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" || winner != "" {
+	log.Printf("%s requested %s", r.RemoteAddr, r.URL.Path)
+
+	if r.Method != http.MethodPost || winner != "" {
 		http.Redirect(w, r, "/game", http.StatusSeeOther)
 		return
 	}
 
-	col := r.FormValue("col")
-	var c int
-	fmt.Sscanf(col, "%d", &c)
+	c, err := strconv.Atoi(r.FormValue("col"))
+	if err != nil || c < 0 || c > 6 {
+		http.Redirect(w, r, "/game", http.StatusSeeOther)
+		return
+	}
 
+	// Placer jeton
 	placed := false
 	for i := 5; i >= 0; i-- {
 		if board[i][c] == "" {
@@ -146,6 +169,7 @@ func playHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Vérification victoire
 	if checkWin(turn) {
 		if turn == "R" {
 			winner = "Le joueur Rouge a gagné ! 🎉"
@@ -155,6 +179,7 @@ func playHandler(w http.ResponseWriter, r *http.Request) {
 	} else if isBoardFull() {
 		winner = "Match nul : la grille est remplie 🎯"
 	} else {
+		// Changer de tour
 		if turn == "R" {
 			turn = "J"
 		} else {
@@ -164,20 +189,23 @@ func playHandler(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/game", http.StatusSeeOther)
 }
-
 func main() {
-	// Servir le CSS
+	// Fichiers statiques
 	http.Handle("/style/", http.StripPrefix("/style/", http.FileServer(http.Dir("style"))))
-	// Servir la vidéo
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
+	// Routes
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/game", gameHandler)
 	http.HandleFunc("/play", playHandler)
 
-	fmt.Println("Serveur lancé sur http://localhost:4000")
-	err := http.ListenAndServe(":4000", nil)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "4000"
+	}
+	fmt.Printf("Serveur lancé sur http://localhost:%s\n", port)
+	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
-		fmt.Println("Erreur serveur:", err)
+		log.Fatal("Erreur serveur:", err)
 	}
 }
