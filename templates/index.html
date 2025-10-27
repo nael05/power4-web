@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>Puissance 4</title>
 <style>
-/* Reset */
 * {
   margin: 0;
   padding: 0;
@@ -23,7 +22,6 @@ body, html {
   position: relative;
 }
 
-/* Vidéo plein écran */
 video {
   position: fixed;
   top: 50%;
@@ -35,7 +33,6 @@ video {
   z-index: -2;
 }
 
-/* Overlay sombre pour contraste */
 #overlay {
   position: fixed;
   top: 0;
@@ -46,21 +43,18 @@ video {
   z-index: -1;
 }
 
-/* Conteneur central */
 .container {
   position: relative;
   z-index: 1;
   color: #fff;
 }
 
-/* Titre */
 h1 {
   font-size: 4rem;
   margin-bottom: 50px;
   text-shadow: 2px 2px 12px rgba(0,0,0,0.7);
 }
 
-/* Bouton Jouer */
 .play-button {
   padding: 18px 50px;
   font-size: 2rem;
@@ -79,7 +73,6 @@ h1 {
   box-shadow: 0 8px 20px rgba(0,0,0,0.5);
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   h1 {
     font-size: 3rem;
@@ -93,15 +86,12 @@ h1 {
 </head>
 <body>
 
-<!-- Vidéo de fond -->
 <video autoplay muted loop>
   <source src="/static/background.gif" type="video/gif">
 </video>
 
-<!-- Overlay -->
 <div id="overlay"></div>
 
-<!-- Contenu central -->
 <div class="container">
   <h1>Bienvenue sur Puissance 4 !</h1>
   <button class="play-button" onclick="window.location.href='/game'">Jouer</button>

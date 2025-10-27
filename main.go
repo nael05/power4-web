@@ -18,6 +18,7 @@ var (
 
 var templates = template.Must(template.ParseFiles("templates/home.html", "templates/game.html"))
 
+// tableau
 func renderBoard() template.HTML {
 	var sb strings.Builder
 	sb.WriteString("<table>")
@@ -58,12 +59,14 @@ func renderBoard() template.HTML {
 	return template.HTML(sb.String())
 }
 
+// reset pour rejouer
 func resetBoard() {
 	board = [6][7]string{}
 	turn = "R"
 	winner = ""
 }
 
+// condition pour rejouer
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	if winner != "" || isBoardFull() {
 		resetBoard()
@@ -76,6 +79,7 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 	templates.ExecuteTemplate(w, "game.html", data)
 }
 
+// verifie la victoire
 func checkWin(p string) bool {
 	for r := 0; r < 6; r++ {
 		for c := 0; c <= 3; c++ {
@@ -108,6 +112,7 @@ func checkWin(p string) bool {
 	return false
 }
 
+// verifie si la grille est pleine
 func isBoardFull() bool {
 	for r := 0; r < 6; r++ {
 		for c := 0; c < 7; c++ {
@@ -119,6 +124,7 @@ func isBoardFull() bool {
 	return true
 }
 
+// gere les coups
 func playHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost || winner != "" {
 		http.Redirect(w, r, "/game", http.StatusSeeOther)
@@ -160,6 +166,7 @@ func playHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/game", http.StatusSeeOther)
 }
 
+// serveur
 func main() {
 	http.Handle("/style/", http.StripPrefix("/style/", http.FileServer(http.Dir("style"))))
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
