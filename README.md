@@ -2,11 +2,11 @@
 
 A simple, lightweight web implementation of the classic strategy game **Connect 4** (Puissance 4), built with **Go** (Golang) for the backend and **HTML/CSS** for the frontend.
 
-## 📋 Project Overview
+##  Project Overview
 
 This project serves a playable Connect 4 grid where two players can compete locally. The server handles the game logic, including move validation, win detection (horizontal, vertical, diagonal), and draw conditions.
 
-## ✨ Features
+##  Features
 
 - **Classic Gameplay**: 6x7 grid implementation respecting standard rules.
 - **Two Player Mode**: Local multiplayer with alternating turns (🔴 Red vs 🟡 Yellow).
@@ -21,13 +21,13 @@ This project serves a playable Connect 4 grid where two players can compete loca
   - Animated background (GIF/Video support).
 - **Reset Functionality**: Ability to restart the game immediately after a match ends.
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 - **Backend**: Go (Golang) 1.25+
 - **Frontend**: HTML5, CSS3
 - **Templating**: Go `html/template` package
 
-## 📂 Project Structure
+##  Project Structure
 
 ```text
 .
